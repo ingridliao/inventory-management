@@ -10,47 +10,48 @@ tests/
 ├── backend/            # Backend API tests
 │   ├── conftest.py     # Test fixtures and configuration
 │   ├── test_inventory.py      # Inventory endpoint tests (10 tests)
-│   ├── test_orders.py         # Orders endpoint tests (15 tests)
 │   ├── test_dashboard.py      # Dashboard endpoint tests (13 tests)
-│   └── test_misc_endpoints.py # Demand, backlog, spending tests (13 tests)
+│   └── test_misc_endpoints.py # Demand, backlog, spending, root tests (17 tests)
 └── README.md           # This file
 ```
 
 ## Running Tests
 
+Run from `server/`, not `tests/`: `tests/` has no Python project of its own, so `uv run pytest` there fails with "Failed to spawn: pytest". Install deps first with `cd server && uv sync`.
+
 ### Run all tests
 ```bash
-cd tests
-uv run pytest -v
+cd server
+uv run pytest ../tests -v
 ```
 
 ### Run specific test file
 ```bash
-cd tests
-uv run pytest backend/test_inventory.py -v
+cd server
+uv run pytest ../tests/backend/test_inventory.py -v
 ```
 
 ### Run specific test class
 ```bash
-cd tests
-uv run pytest backend/test_inventory.py::TestInventoryEndpoints -v
+cd server
+uv run pytest ../tests/backend/test_inventory.py::TestInventoryEndpoints -v
 ```
 
 ### Run specific test
 ```bash
-cd tests
-uv run pytest backend/test_inventory.py::TestInventoryEndpoints::test_get_all_inventory -v
+cd server
+uv run pytest ../tests/backend/test_inventory.py::TestInventoryEndpoints::test_get_all_inventory -v
 ```
 
 ### Run with coverage (requires pytest-cov)
 ```bash
-cd tests
-uv run pytest --cov=../server --cov-report=html
+cd server
+uv run pytest ../tests --cov=. --cov-report=html
 ```
 
 ## Test Coverage
 
-**Total: 51 tests** covering all API endpoints:
+**Total: 40 tests.** There are currently no tests for the orders endpoints.
 
 ### Inventory Endpoints (10 tests)
 - ✓ Get all inventory items
@@ -62,18 +63,6 @@ uv run pytest --cov=../server --cov-report=html
 - ✓ Validate field structure
 - ✓ Validate data types
 
-### Orders Endpoints (15 tests)
-- ✓ Get all orders
-- ✓ Filter by warehouse, category, status
-- ✓ Filter by month and quarter
-- ✓ Multiple filter combinations
-- ✓ Get specific order by ID
-- ✓ Handle non-existent orders (404)
-- ✓ Validate order items structure
-- ✓ Validate status values
-- ✓ Validate date formats
-- ✓ Validate total value calculations
-
 ### Dashboard Endpoints (13 tests)
 - ✓ Get dashboard summary
 - ✓ Validate data types and non-negative values
@@ -84,7 +73,7 @@ uv run pytest --cov=../server --cov-report=html
   - Low stock items calculation
   - Total inventory value calculation
 
-### Miscellaneous Endpoints (13 tests)
+### Miscellaneous Endpoints (17 tests)
 - **Demand Forecasts (3 tests)**
   - ✓ Get demand forecasts
   - ✓ Validate trend values
@@ -149,8 +138,9 @@ To integrate with CI/CD pipelines:
 # Example GitHub Actions
 - name: Run API Tests
   run: |
-    cd tests
-    uv run pytest -v --tb=short
+    cd server
+    uv sync
+    uv run pytest ../tests -v --tb=short
 ```
 
 ## Notes
